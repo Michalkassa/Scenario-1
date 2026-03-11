@@ -8,7 +8,7 @@
 * uv (Python package manager)
 
 ---
-
+        
 # Installing uv
 
 MindfulDesk uses **uv** to manage dependencies and run the project.
