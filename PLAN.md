@@ -303,23 +303,6 @@ session_history.json
 
 ---
 
-### SQLite Database (Optional)
-
-For more structured storage.
-
-Example tables:
-
-```
-hydration_logs
-meditation_sessions
-timer_sessions
-user_preferences
-```
-
-Local storage ensures **privacy and offline functionality**.
-
----
-
 # Hydration Calculation Model
 
 Hydration estimation is based on multiple inputs.

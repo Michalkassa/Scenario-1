@@ -9,4 +9,13 @@ class HydrationScreen(tk.Frame):
 
         tk.Button(self, text="Home", width=20, height=2,
                   command=lambda: controller.show_frame("HomeScreen")).pack()
+        
+        #hydration calculation form or manual input
+
+        #daily hydration goal displayed
+
+        #hydration logger 
+
+
+
                   
