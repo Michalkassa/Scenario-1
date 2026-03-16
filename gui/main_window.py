@@ -4,6 +4,7 @@ from .home_screen import HomeScreen
 from .hydration_screen import HydrationScreen
 from .meditation_screen import MeditationScreen
 from .timer_screen import TimerScreen
+from .settings_screen import SettingsScreen
 
 class MainWindow:
     def __init__(self, root):
@@ -19,7 +20,7 @@ class MainWindow:
 
         self.frames = {}
 
-        for F in (HomeScreen, HydrationScreen, MeditationScreen, TimerScreen ):
+        for F in (HomeScreen, HydrationScreen, MeditationScreen, TimerScreen, SettingsScreen):
             frame = F(parent=self.container, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0,column=0,sticky="nsew");

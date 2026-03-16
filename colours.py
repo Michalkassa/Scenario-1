@@ -1,0 +1,5 @@
+
+BG = "#2B2D3A"
+BTN_BG = "#313447"
+TITLE_FG = "#FFFFFF"
+BTN_FG= "#000000"
