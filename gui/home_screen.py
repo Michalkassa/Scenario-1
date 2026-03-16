@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageOps
 from pathlib import Path
-from services.weather_api import getData, getLocation, getTemperature, getHumidity
+from services.weather_api import get_data, get_location, get_temperature, get_humidity, get_temperature_feels_like
 from colours import BG, BTN_BG, TITLE_FG, BTN_FG
 from fonts import FONT_SMALL, FONT_MEDIUM , FONT_LARGE
 
@@ -159,10 +159,11 @@ class HomeScreen(tk.Frame):
 
     def load_weather(self):
         try:
-            data = getData()
-            city, country = getLocation(data)
-            temp, feels_like = getTemperature(data)
-            humidity = getHumidity(data)
+            data = get_data()
+            city, country = get_location(data)
+            temp = get_temperature(data)
+            feels_like = get_temperature_feels_like(data)
+            humidity = get_humidity(data)
 
             self.lbl_city.configure(text=f"{city}, {country}")
             self.lbl_temp.configure(text=f"{round(temp)}°C")

@@ -1,6 +1,5 @@
 import tkinter as tk
 from gui.main_window import MainWindow
-from services.weather_api import getData, getTemperature 
 
 def main():
     root = tk.Tk()

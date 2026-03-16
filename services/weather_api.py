@@ -18,24 +18,23 @@ def get_city():
     with open(SETTINGS_PATH) as f:
         return json.load(f)["city"]
 
-def getData():
+def get_data():
     url = BASE_URL + "appid=" + API_KEY + "&q=" + get_city() + "&units=metric"
     response = requests.get(url)
     response.raise_for_status()
     return response.json()
 
-def getLocation(data):
+def get_location(data):
     return data["name"], data["sys"]["country"]
 
-def getTemperature(data):
-    return data["main"]["temp"], data["main"]["feels_like"]
+def get_temperature(data) -> int:
+    return int(data["main"]["temp"])
 
-def getHumidity(data):
-    return data["main"]["humidity"]
+def get_temperature_feels_like(data) -> int:
+    return int(data["main"]["feels_like"])
 
-def getRainChance(data):
+def get_humidity(data) -> int:
+    return int(data["main"]["humidity"])
+
+def get_rain_chance(data):
     return data.get("rain", {}).get("1h", 0)
-
-def getWeatherIcon(data):
-    icon_code = data["weather"][0]["icon"]
-    return f"http://openweathermap.org/img/wn/{icon_code}@2x.png"
