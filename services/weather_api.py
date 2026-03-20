@@ -21,7 +21,7 @@ def get_city():
 def get_data():
     url = BASE_URL + "appid=" + API_KEY + "&q=" + get_city() + "&units=metric"
     response = requests.get(url)
-    response.raise_for_status()
+    response.raise_for_status()     
     return response.json()
 
 def get_location(data):

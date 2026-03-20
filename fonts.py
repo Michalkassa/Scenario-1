@@ -1,3 +1,3 @@
 FONT_LARGE  = ("Georgia", 34)
 FONT_MEDIUM = ("Georgia", 25)
-FONT_SMALL  = ("Georgia", 12)
+FONT_SMALL  = ("Georgia", 12)       

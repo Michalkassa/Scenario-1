@@ -1,1 +1,2 @@
-WEATHER_API_KEY=[HERE PLACE YOUR API KEY FROM https://openweathermap.org/api]
+// create a file named .env and add this into it 
+WEATHER_API_KEY=[HERE PLACE YOUR API KEY FROM https://openweathermap.org/api] 
