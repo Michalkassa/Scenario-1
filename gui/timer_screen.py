@@ -74,21 +74,7 @@ class TimerScreen(tk.Frame):
         setattr(self, f"{timer_name}_time_label", time_label)
 
     def _make_button(self, parent, text, width, command):
-        return tk.Button(
-            parent,
-            text=text,
-            width=width,
-            command=command,
-            relief="flat",
-            bd=0,
-            bg=self.button_bg,
-            fg=self.button_fg,
-            activebackground=self.button_fg,
-            activeforeground=self.button_bg,
-            highlightthickness=0,
-        )
-
-
+        return tk.Button(parent,text=text,width=width,command=command,relief="flat",bd=0,bg=self.button_bg,fg=self.button_fg,activebackground=self.button_fg,activeforeground=self.button_bg,highlightthickness=0)
 
     def _draw_ring(self, canvas, progress, color):
         canvas.delete("all")
@@ -100,17 +86,7 @@ class TimerScreen(tk.Frame):
         canvas.create_oval(x0, y0, x1, y1, outline=BTN_BG, width=width)
         if progress > 0:
             extent = progress * 360
-            canvas.create_arc(
-                x0,
-                y0,
-                x1,
-                y1,
-                start=90,
-                extent=-extent,
-                style="arc",
-                outline=color,
-                width=width,
-            )
+            canvas.create_arc(x0,y0,x1,y1,start=90,extent=-extent,style="arc",outline=color,width=width)
 
     def _apply_preset(self, work, rest, cycles):
         self.work_var.set(str(work))
