@@ -1,0 +1,4 @@
+static/music/*.mp3 filter=lfs diff=lfs merge=lfs -text
+static/music/*.wav filter=lfs diff=lfs merge=lfs -text
+static/music/*.ogg filter=lfs diff=lfs merge=lfs -text
+static/music/*.flac filter=lfs diff=lfs merge=lfs -text

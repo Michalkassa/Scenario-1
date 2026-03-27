@@ -10,6 +10,3 @@ wheels/
 .venv
 .env
 
-# Local media assets (keep out of git; too large for GitHub limits)
-static/music/
-
