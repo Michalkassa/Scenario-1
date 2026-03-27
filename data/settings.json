@@ -1,4 +1,7 @@
 {
-  "city": "12312",
-  "goal": 3697
+  "city": "Dubai",
+  "goal": 3697,
+  "sound_volume": 35,
+  "sound_enabled": true,
+  "music_track_global": ""
 }

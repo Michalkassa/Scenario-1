@@ -5,6 +5,7 @@ from PIL import Image, ImageTk, ImageOps
 from colours import BG, BTN_BG, TITLE_FG, BTN_FG
 from fonts import FONT_SMALL, FONT_MEDIUM, FONT_LARGE
 from meditation.box_breathing import BoxBreathingSession
+from .sound import sound_manager
 
 BG_IMAGE_PATH = Path(__file__).parent.parent / "static" / "meditation_bg.jpg"
 
@@ -102,18 +103,16 @@ class MeditationScreen(tk.Frame):
         header.pack(fill="x", padx=40, pady=(10, 0))
         tk.Label(header, text="Meditation", font=FONT_MEDIUM,
                  fg='#5CDB95', bg=BG).pack(side="left")
-        tk.Button(header, text="← Back", font=FONT_SMALL,
+        tk.Button(header, text="Home", font=FONT_SMALL,
                   fg='#5CDB95', bg=BG, relief="flat", bd=0,
                   command=self._go_back).pack(side="right")
 
-        tk.Frame(self, bg='#5CDB95', height=1).pack(fill="x", padx=40, pady=(8, 0))
-
         tk.Label(self, text="Box Breathing", font=FONT_LARGE,
-                 fg='#5CDB95', bg=BG).pack(pady=(4, 2))
+                 fg='#5CDB95', bg=BG).pack(pady=(12, 2))
         tk.Label(self, text="Inhale · Hold · Exhale · Rest  —  4 seconds each",
                  font=FONT_SMALL, fg='#5CDB95', bg=BG).pack()
 
-        dur_row = tk.Frame(self, bg=BG)
+        dur_row = tk.Frame(self, bg=BG, highlightthickness=0)
         dur_row.pack(pady=(4, 0))
         tk.Label(dur_row, text="Duration (minutes):", font=FONT_SMALL,
                  fg='#5CDB95', bg=BG).pack(side="left", padx=(0, 10))
@@ -129,24 +128,24 @@ class MeditationScreen(tk.Frame):
         self._redraw()
 
         self._phase_label = tk.Label(self, text="", font=("Georgia", 22),
-                                     fg='#5CDB95', bg=BG)
-        self._phase_label.pack(pady=(4, 2))
+                                     fg='#5CDB95', bg=BG, relief="flat", bd=0, highlightthickness=0)
 
-        ctrl = tk.Frame(self, bg=BG)
-        ctrl.pack(pady=(4, 0))
+        ctrl = tk.Frame(self, bg=BG, highlightthickness=0)
+        ctrl.pack(pady=(24, 0))
         self._start_btn = tk.Button(ctrl, text="Start", font=FONT_SMALL,
-                                    fg="#5CDB95", bg="#2B2D3A", relief="flat", bd=0,
-                                    padx=24, pady=10, command=self._start_session)
-        self._start_btn.pack(side="left", padx=6)
+                                    fg="#5CDB95", bg=BG, relief="raised", bd=1,
+                                    padx=30, pady=12, command=self._start_session,
+                                    activebackground=BG, activeforeground="#5CDB95")
+        self._start_btn.pack(side="left", padx=12)
         self._stop_btn = tk.Button(ctrl, text="Stop", font=FONT_SMALL,
-                                   fg="#5CDB95", bg="#2B2D3A", relief="flat", bd=0,
-                                   padx=24, pady=10, state="disabled",
-                                   command=self._stop_session)
-        self._stop_btn.pack(side="left", padx=6)
+                                   fg="#5CDB95", bg=BG, relief="raised", bd=1,
+                                   padx=30, pady=12, state="disabled",
+                                   command=self._stop_session,
+                                   activebackground=BG, activeforeground="#5CDB95")
+        self._stop_btn.pack(side="left", padx=12)
 
         self._feedback = tk.Label(self, text="", font=FONT_SMALL,
-                                  fg='#5CDB95', bg=BG)
-        self._feedback.pack(pady=(4, 0))
+                                  fg='#5CDB95', bg=BG, relief="flat", bd=0, highlightthickness=0)
 
     def _load_bg(self):
         if not BG_IMAGE_PATH.exists():
@@ -250,7 +249,9 @@ class MeditationScreen(tk.Frame):
                 raise ValueError
         except ValueError:
             self._feedback.configure(text="Please enter a valid number of minutes.")
+            self._feedback.pack(pady=(4, 0))
             return
+        self._feedback.pack_forget()
         self._feedback.configure(text="")
         self._start_btn.configure(state="disabled")
         self._stop_btn.configure(state="normal")
@@ -288,7 +289,8 @@ class MeditationScreen(tk.Frame):
         else:  # Rest
             target_bend, animate = -1.0, False
 
-        self.after(0, lambda: self._phase_label.configure(text=phase_name))
+        self.after(0, lambda: (self._phase_label.configure(text=phase_name), 
+                               self._phase_label.pack(pady=(4, 2))))
         self.after(0, lambda b=target_bend, c=colour, a=animate:
                    self._start_bend_animation(b, c, a))
         
@@ -312,18 +314,23 @@ class MeditationScreen(tk.Frame):
     def _session_complete(self):
         self._stop_dot()
         self._phase_label.configure(text="Session complete ✓")
+        self._phase_label.pack(pady=(4, 2))
         self._feedback.configure(text="Well done — take a moment to notice how you feel.")
+        self._feedback.pack(pady=(4, 0))
         self._start_btn.configure(state="normal")
         self._stop_btn.configure(state="disabled")
         self._bend = 0.0
         self._redraw()
         self._session = None
+        sound_manager.play_friendly_chime()
 
     def _reset_ui(self):
         if self._bend_job:
             self.after_cancel(self._bend_job)
             self._bend_job = None
+        self._phase_label.pack_forget()
         self._phase_label.configure(text="")
+        self._feedback.pack_forget()
         self._feedback.configure(text="")
         self._start_btn.configure(state="normal")
         self._stop_btn.configure(state="disabled")

@@ -47,7 +47,7 @@ class HydrationScreen(tk.Frame):
         header.pack(fill="x", padx=40, pady=(20, 0))
         tk.Label(header, text="Hydration", font=FONT_MEDIUM, fg=TITLE_FG, bg=BG).pack(side="left")
         tk.Button(
-            header, text="← Back", font=FONT_SMALL, fg=BTN_FG, bg=BG,
+            header, text="Home", font=FONT_SMALL, fg='#5CDB95', bg=BG,
             relief="flat", bd=0,
             command=lambda: self.controller.show_frame("HomeScreen")
         ).pack(side="right")

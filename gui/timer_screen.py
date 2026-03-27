@@ -2,6 +2,7 @@ import tkinter as tk
 
 from colours import BG, BTN_BG, TITLE_FG
 from fonts import FONT_LARGE, FONT_SMALL
+from .sound import sound_manager
 
 class TimerScreen(tk.Frame):
     def __init__(self, parent, controller):
@@ -31,7 +32,8 @@ class TimerScreen(tk.Frame):
         top_bar.columnconfigure(1, weight=2)
         top_bar.columnconfigure(2, weight=1)
 
-        self._make_button(top_bar, "Home", 10, self._go_home).grid(row=0, column=0, sticky="w")
+        tk.Button(top_bar, text="Home", font=FONT_SMALL, fg='#5CDB95', bg=BG,
+                  relief="flat", bd=0, command=self._go_home).grid(row=0, column=2, sticky="e")
         tk.Label(top_bar, text="Timers", font=FONT_LARGE, fg=TITLE_FG, bg=BG).grid(row=0, column=1)
 
         self._build_ui(0, "pomodoro", [("Work (min)", "work_var", "25"), ("Break (min)", "break_var", "5"), ("Cycles", "cycles_var", "4")])
@@ -191,6 +193,7 @@ class TimerScreen(tk.Frame):
                 self.pomodoro_heading_label.configure(fg=self.complete_color)
                 self.pomodoro_time_label.configure(fg=self.complete_color)
                 self._draw_ring(self.pomodoro_ring, 1, self.complete_color)
+                sound_manager.play_friendly_chime()
                 return
             t["phase"] = "Work"
             t["seconds_left"] = max(1, work_minutes * 60)
@@ -276,6 +279,7 @@ class TimerScreen(tk.Frame):
         self.simple_heading_label.configure(fg=self.complete_color)
         self.simple_time_label.configure(fg=self.complete_color)
         self._draw_ring(self.simple_ring, 1, self.complete_color)
+        sound_manager.play_friendly_chime()
 
     def pause_simple(self):
         t = self.timers["simple"]

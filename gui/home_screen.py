@@ -10,13 +10,14 @@ class HomeScreen(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=BG)
         self.controller = controller
+        self._image_tk = None
         self.grid_propagate(False)
         self.update_idletasks()
         self.image_path = Path(__file__).parent.parent / "static" / "thumbnail.jpg"
 
-        self.columnconfigure(0, weight=2, uniform="equal")
-        self.columnconfigure(1, weight=3, uniform="equal")
-        self.rowconfigure(0, weight=2)
+        self.columnconfigure(0, weight=8, minsize=350)
+        self.columnconfigure(1, weight=12, minsize=430)
+        self.rowconfigure(0, weight=3)
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=1)
         self.rowconfigure(3, weight=1)
@@ -24,13 +25,15 @@ class HomeScreen(tk.Frame):
         left_panel = tk.Frame(self, bg=BG)
         left_panel.grid(row=0, column=0, rowspan=4, sticky="nsew")
         left_panel.columnconfigure(0, weight=1)
-        left_panel.rowconfigure(0, weight=2)
-        left_panel.rowconfigure(1, weight=1)
-        left_panel.rowconfigure(2, weight=1)
-        left_panel.rowconfigure(3, weight=1)
+        left_panel.rowconfigure(0, weight=1)
+        left_panel.rowconfigure(1, weight=0)
+        left_panel.rowconfigure(2, weight=0)
+        left_panel.rowconfigure(3, weight=0)
+        left_panel.rowconfigure(4, weight=0)
+        left_panel.rowconfigure(5, weight=3)
 
         title_block = tk.Frame(left_panel, bg=BG)
-        title_block.grid(row=0, column=0, sticky="nsew", padx=40, pady=(50, 10))
+        title_block.grid(row=0, column=0, sticky="nsew", padx=32, pady=(50, 10))
 
         tk.Label(
             title_block,
@@ -41,17 +44,20 @@ class HomeScreen(tk.Frame):
             anchor="w"
         ).pack(anchor="w")
 
-        tk.Label(
+        self.subtitle_label = tk.Label(
             title_block,
             text="Tools for focus, calm & healthy habits",
             font=FONT_SMALL,
             fg=TITLE_FG,
             bg=BG,
-            anchor="w"
-        ).pack(anchor="w", pady=(4, 0))
+            anchor="w",
+            justify="left"
+        )
+        self.subtitle_label.pack(anchor="w", pady=(4, 0))
+        title_block.bind("<Configure>", self._on_title_block_resize)
 
         tk.Frame(left_panel, bg=BTN_BG, height=1).grid(
-            row=0, column=0, sticky="sew", padx=40
+            row=1, column=0, sticky="sew", padx=32, pady=(0, 6)
         )
 
         buttons = [
@@ -74,12 +80,12 @@ class HomeScreen(tk.Frame):
                 padx=30,
                 command=lambda s=screen: controller.show_frame(s)
             )
-            btn.grid(row=i + 1, column=0, sticky="ew", padx=40, pady=6)
+            btn.grid(row=i + 2, column=0, sticky="ew", padx=32, pady=5)
             btn.bind("<Enter>", lambda e, b=btn: b.configure(bg=BTN_BG))
             btn.bind("<Leave>", lambda e, b=btn: b.configure(bg=BTN_BG))
 
         right_panel = tk.Frame(self, bg=BG)
-        right_panel.grid(row=0, column=1, rowspan=4, sticky="nsew")
+        right_panel.grid(row=0, column=1, rowspan=4, sticky="nsew", padx=10, pady=10)
         right_panel.columnconfigure(0, weight=1)
         right_panel.rowconfigure(0, weight=1)
         right_panel.rowconfigure(1, weight=0)
@@ -88,11 +94,11 @@ class HomeScreen(tk.Frame):
             right_panel, bg=BG,
             padx=0, pady=0, borderwidth=0, highlightthickness=0
         )
-        self.image_label.grid(row=0, column=0, rowspan=2, sticky="nsew")
+        self.image_label.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=0, pady=0)
 
         tk.Frame(right_panel, bg=BTN_BG, height=1).grid(row=1, column=0, sticky="new")
 
-        weather_bar = tk.Frame(right_panel, bg=BG, pady=20)
+        weather_bar = tk.Frame(right_panel, bg=BG, pady=10)
         weather_bar.grid(row=1, column=0, sticky="sew")
         weather_bar.columnconfigure(0, weight=1)
         weather_bar.columnconfigure(1, weight=0)
@@ -152,14 +158,16 @@ class HomeScreen(tk.Frame):
             self.after(50, self.load_image)
             return
         img = Image.open(self.image_path)
-        img = ImageOps.fit(img, (w, h))
+        img.thumbnail((w, h), Image.Resampling.LANCZOS)
         image = ImageTk.PhotoImage(img)
-        self.image_label.configure(image=image, width=w, height=h)
-        self.image_label.image = image
+        self._image_tk = image
+        self.image_label.configure(image=self._image_tk)
 
     def load_weather(self):
         try:
             data = get_data()
+            if not data:
+                raise ValueError("No weather data")
             city, country = get_location(data)
             temp = get_temperature(data)
             feels_like = get_temperature_feels_like(data)
@@ -169,12 +177,16 @@ class HomeScreen(tk.Frame):
             self.lbl_temp.configure(text=f"{round(temp)}°C")
             self.lbl_feels.configure(text=f"Feels like {round(feels_like)}°C")
             self.lbl_humidity.configure(text=f"Humidity\n{humidity}%")
-        except Exception as e:
+        except Exception:
             self.lbl_city.configure(text="Weather unavailable")
             self.lbl_temp.configure(text="--°C")
-            self.lbl_feels.configure(text="--")
-            self.lbl_humidity.configure(text="try changing location in settings")
-            print(f"Weather error: {e}")
+            self.lbl_feels.configure(text="Check API key or city")
+            self.lbl_humidity.configure(text="Humidity\n--")
+
+    def _on_title_block_resize(self, _event):
+        # Keep subtitle readable instead of clipping when fonts/DPI vary.
+        width = max(_event.width - 4, 120)
+        self.subtitle_label.configure(wraplength=width)
 
     def tkraise(self, aboveThis=None):
         super().tkraise(aboveThis)
